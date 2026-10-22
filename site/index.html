@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testkatalog</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --flate: #ffffff;
+    --tekst: #1d2125;
+    --dempet: #5c6670;
+    --linje: #dedbd2;
+    --aksent: #1f5f8b;
+    --aksent-lys: #e3eef6;
+    --ok: #2e7d4f;
+    --ok-lys: #e2f2e8;
+    --varsel: #9a6400;
+    --varsel-lys: #fbf0d9;
+    --stopp: #a8322d;
+    --stopp-lys: #f8e3e1;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15181b;
+      --flate: #1e2226;
+      --tekst: #e8eaec;
+      --dempet: #9aa4ad;
+      --linje: #30363c;
+      --aksent: #7fb6dd;
+      --aksent-lys: #1c3242;
+      --ok: #7cc79a;
+      --ok-lys: #1b3426;
+      --varsel: #e2b25a;
+      --varsel-lys: #3a2e14;
+      --stopp: #ec8a84;
+      --stopp-lys: #3d1f1d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--tekst);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .ramme { max-width: 1040px; margin: 0 auto; padding: 0 16px 64px; }
+  header { padding: 32px 0 8px; }
+  header h1 { margin: 0; font-size: 1.75rem; letter-spacing: -0.01em; }
+  header p { margin: 4px 0 0; color: var(--dempet); max-width: 60ch; }
+  .tall { display: flex; gap: 24px; margin: 16px 0 0; flex-wrap: wrap; color: var(--dempet); font-size: 0.9rem; }
+  .tall b { color: var(--tekst); font-size: 1.15rem; margin-right: 4px; }
+
+  nav { display: flex; gap: 4px; border-bottom: 1px solid var(--linje); margin: 24px 0 20px; overflow-x: auto; }
+  nav button {
+    background: none; border: 0; padding: 10px 14px; font: inherit; color: var(--dempet);
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;
+  }
+  nav button[aria-selected="true"] { color: var(--tekst); border-bottom-color: var(--aksent); font-weight: 600; }
+  nav button:focus-visible { outline: 2px solid var(--aksent); outline-offset: -2px; }
+
+  .verktoy { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .verktoy input, .verktoy select {
+    font: inherit; padding: 8px 10px; border: 1px solid var(--linje); border-radius: 8px;
+    background: var(--flate); color: var(--tekst);
+  }
+  .verktoy input { flex: 1 1 220px; min-width: 0; }
+
+  .rutenett { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .kort {
+    background: var(--flate); border: 1px solid var(--linje); border-radius: var(--radius);
+    padding: 16px; display: flex; flex-direction: column; gap: 8px; scroll-margin-top: 16px;
+  }
+  .kort.markert { outline: 2px solid var(--aksent); }
+  .kort h3 { margin: 0; font-size: 1.05rem; }
+  .kort p { margin: 0; color: var(--dempet); font-size: 0.95rem; }
+  .meta { font-size: 0.85rem; color: var(--dempet); }
+  .brikker { display: flex; flex-wrap: wrap; gap: 6px; }
+  .brikke {
+    font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; background: var(--aksent-lys); color: var(--aksent);
+    border: 0; font-family: inherit;
+  }
+  button.brikke { cursor: pointer; }
+  button.brikke:hover { text-decoration: underline; }
+  .tilgang-offentlig { background: var(--ok-lys); color: var(--ok); }
+  .tilgang-begrenset { background: var(--varsel-lys); color: var(--varsel); }
+  .tilgang-ikke_offentlig { background: var(--stopp-lys); color: var(--stopp); }
+  .etikett { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dempet); margin-top: 4px; }
+  ul.distr { margin: 0; padding: 0; list-style: none; font-size: 0.9rem; }
+  ul.distr li { display: flex; gap: 8px; align-items: baseline; }
+  ul.distr code { font-size: 0.75rem; color: var(--dempet); min-width: 3em; }
+  a { color: var(--aksent); }
+  .tom { color: var(--dempet); padding: 24px 0; }
+
+  .panel { background: var(--flate); border: 1px solid var(--linje); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; overflow-x: auto; }
+  .panel h2 { margin: 0 0 4px; font-size: 1.1rem; }
+  .panel > p { margin: 0 0 12px; color: var(--dempet); font-size: 0.95rem; }
+  .mermaid { text-align: center; min-height: 80px; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { color: var(--dempet); font-weight: 600; font-size: 0.8rem; }
+  td code { font-size: 0.85rem; }
+  .krav { color: var(--stopp); font-weight: 600; }
+  .klasse-hode { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .klasse-hode code { color: var(--dempet); font-size: 0.8rem; }
+
+  .filer { display: grid; gap: 8px; }
+  .filer a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; background: var(--flate);
+    border: 1px solid var(--linje); border-radius: var(--radius); text-decoration: none; color: var(--tekst); }
+  .filer a span { color: var(--dempet); font-size: 0.9rem; }
+  .filer a:hover { border-color: var(--aksent); }
+  footer { margin-top: 48px; color: var(--dempet); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="ramme">
+  <header>
+    <h1 id="tittel">Datakatalog</h1>
+    <p id="beskrivelse">Laster…</p>
+    <div class="tall" id="tall"></div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" data-fane="datasett" aria-selected="true">Datasett</button>
+    <button role="tab" data-fane="begreper" aria-selected="false">Begreper</button>
+    <button role="tab" data-fane="modell" aria-selected="false">Modell</button>
+    <button role="tab" data-fane="filer" aria-selected="false">Filer</button>
+  </nav>
+
+  <section id="fane-datasett">
+    <div class="verktoy">
+      <input id="sok" type="search" placeholder="Søk i tittel, beskrivelse og nøkkelord" aria-label="Søk">
+      <select id="filter-tema" aria-label="Tema"><option value="">Alle temaer</option></select>
+      <select id="filter-tilgang" aria-label="Tilgangsnivå"><option value="">Alle tilgangsnivåer</option></select>
+      <select id="filter-utgiver" aria-label="Utgiver"><option value="">Alle utgivere</option></select>
+    </div>
+    <div class="rutenett" id="liste-datasett"></div>
+  </section>
+
+  <section id="fane-begreper" hidden>
+    <div class="panel">
+      <h2>Begrepsrelasjoner</h2>
+      <p>Heltrukne piler går til et overordnet begrep. Stiplede linjer er «se også».</p>
+      <div class="mermaid" id="begrepsgraf"></div>
+    </div>
+    <div class="rutenett" id="liste-begreper"></div>
+  </section>
+
+  <section id="fane-modell" hidden>
+    <div class="panel">
+      <h2>Klassediagram</h2>
+      <p>Generert automatisk fra skjemaet med <code>gen-erdiagram</code>.</p>
+      <div class="mermaid" id="modelldiagram"></div>
+    </div>
+    <div id="klasser"></div>
+  </section>
+
+  <section id="fane-filer" hidden>
+    <p class="meta" style="margin-top:0">Alt dette er generert fra det samme LinkML-skjemaet når siden bygges.</p>
+    <div class="filer">
+      <a href="artefakter/katalog.yaml">katalog.yaml <span>LinkML-skjemaet (kilden)</span></a>
+      <a href="data/katalog.json">katalog.json <span>Dataene som JSON</span></a>
+      <a href="artefakter/katalog-data.ttl">katalog-data.ttl <span>Dataene som RDF (Turtle)</span></a>
+      <a href="artefakter/katalog.schema.json">katalog.schema.json <span>JSON Schema</span></a>
+      <a href="artefakter/katalog.shacl.ttl">katalog.shacl.ttl <span>SHACL-regler</span></a>
+      <a href="artefakter/katalog.owl.ttl">katalog.owl.ttl <span>OWL-ontologi</span></a>
+    </div>
+  </section>
+
+  <footer id="bunn"></footer>
+</div>
+
+<script type="module">
+// Mermaid (diagrammer) lastes først når det trengs. Feiler det, vises resten av siden likevel.
+const MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+let mermaidLaster;
+function hentMermaid() {
+  mermaidLaster ??= import(MERMAID_URL).then(({ default: m }) => {
+    const morkt = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    m.initialize({ startOnLoad: false, theme: morkt ? "dark" : "neutral", securityLevel: "strict" });
+    return m;
+  });
+  return mermaidLaster;
+}
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const [data, modell, diagram] = await Promise.all([
+  fetch("data/katalog.json").then((r) => r.json()),
+  fetch("data/modell.json").then((r) => r.json()),
+  fetch("data/diagram.mmd").then((r) => r.text()),
+]);
+
+const datasett = data.datasett ?? [];
+const begreper = data.begreper ?? [];
+const orgs = Object.fromEntries((data.organisasjoner ?? []).map((o) => [o.id, o]));
+const begrepById = Object.fromEntries(begreper.map((b) => [b.id, b]));
+const enumVerdier = Object.fromEntries(modell.enums.map((e) => [e.navn, e.verdier]));
+
+const pen = (v) => String(v).replaceAll("_", " ").replace("aa", "å").replace(/^./, (c) => c.toUpperCase());
+const orgNavn = (id) => orgs[id]?.navn ?? id;
+
+// Topp
+$("#tittel").textContent = data.tittel ?? modell.tittel;
+$("#beskrivelse").textContent = data.beskrivelse ?? "";
+document.title = data.tittel ?? "Datakatalog";
+$("#tall").innerHTML = [
+  [datasett.length, "datasett"],
+  [begreper.length, "begreper"],
+  [Object.keys(orgs).length, "organisasjoner"],
+].map(([n, t]) => `<span><b>${n}</b>${t}</span>`).join("");
+$("#bunn").innerHTML = `Modell: <code>${esc(modell.navn)}</code> v${esc(modell.versjon)} · laget med <a href="https://linkml.io">LinkML</a>`;
+
+// Faner
+const faner = document.querySelectorAll("nav button");
+const tegnet = new Set();
+function visFane(navn) {
+  faner.forEach((b) => b.setAttribute("aria-selected", b.dataset.fane === navn));
+  document.querySelectorAll("section[id^=fane-]").forEach((s) => (s.hidden = s.id !== "fane-" + navn));
+  if (navn === "modell" && !tegnet.has(navn)) { tegn("#modelldiagram", diagram); tegnet.add(navn); }
+  if (navn === "begreper" && !tegnet.has(navn)) { tegn("#begrepsgraf", begrepsgraf()); tegnet.add(navn); }
+}
+faner.forEach((b) => b.addEventListener("click", () => visFane(b.dataset.fane)));
+
+async function tegn(sel, kilde) {
+  const el = $(sel);
+  el.innerHTML = `<p class="meta">Tegner diagram…</p>`;
+  try {
+    const mermaid = await hentMermaid();
+    const { svg } = await mermaid.render("m" + Math.random().toString(36).slice(2), kilde);
+    el.innerHTML = svg;
+  } catch (e) {
+    el.innerHTML = `<p class="meta">Kunne ikke tegne diagrammet: ${esc(e.message)}</p>`;
+  }
+}
+
+// Datasett
+function fyll(sel, verdier, tekst = pen) {
+  const s = $(sel);
+  verdier.forEach((v) => s.insertAdjacentHTML("beforeend", `<option value="${esc(v)}">${esc(tekst(v))}</option>`));
+}
+fyll("#filter-tema", enumVerdier.Tema.map((v) => v.navn).filter((t) => datasett.some((d) => d.tema?.includes(t))));
+fyll("#filter-tilgang", enumVerdier.Tilgangsniva.map((v) => v.navn));
+fyll("#filter-utgiver", Object.keys(orgs), orgNavn);
+
+function visDatasett() {
+  const q = $("#sok").value.trim().toLowerCase();
+  const tema = $("#filter-tema").value, tilgang = $("#filter-tilgang").value, utgiver = $("#filter-utgiver").value;
+  const treff = datasett.filter((d) =>
+    (!tema || d.tema?.includes(tema)) &&
+    (!tilgang || d.tilgangsniva === tilgang) &&
+    (!utgiver || d.utgiver === utgiver) &&
+    (!q || [d.tittel, d.beskrivelse, ...(d.nokkelord ?? [])].join(" ").toLowerCase().includes(q))
+  );
+  $("#liste-datasett").innerHTML = treff.length ? treff.map((d) => `
+    <article class="kort" id="${esc(d.id)}">
+      <div class="brikker">
+        <span class="brikke tilgang-${esc(d.tilgangsniva)}">${esc(pen(d.tilgangsniva ?? "ukjent"))}</span>
+        ${(d.tema ?? []).map((t) => `<span class="brikke">${esc(pen(t))}</span>`).join("")}
+      </div>
+      <h3>${esc(d.tittel)}</h3>
+      <p>${esc(d.beskrivelse)}</p>
+      <div class="meta">${esc(orgNavn(d.utgiver))}${d.oppdateringsfrekvens ? " · oppdateres " + esc(pen(d.oppdateringsfrekvens).toLowerCase()) : ""}${d.sist_endret ? " · endret " + esc(d.sist_endret) : ""}</div>
+      ${d.begreper_brukt?.length ? `<div class="etikett">Begreper</div><div class="brikker">${d.begreper_brukt.map((b) =>
+        `<button class="brikke" data-begrep="${esc(b)}">${esc(begrepById[b]?.anbefalt_term ?? b)}</button>`).join("")}</div>` : ""}
+      ${d.distribusjoner?.length ? `<div class="etikett">Distribusjoner</div><ul class="distr">${d.distribusjoner.map((x) =>
+        `<li><code>${esc(x.format)}</code><a href="${esc(x.tilgangsurl)}">${esc(x.tittel)}</a></li>`).join("")}</ul>` : ""}
+    </article>`).join("") : `<p class="tom">Ingen datasett passer filteret.</p>`;
+}
+["#sok", "#filter-tema", "#filter-tilgang", "#filter-utgiver"].forEach((s) => $(s).addEventListener("input", visDatasett));
+visDatasett();
+
+// Begreper
+function visBegreper() {
+  $("#liste-begreper").innerHTML = begreper.map((b) => {
+    const brukesI = datasett.filter((d) => d.begreper_brukt?.includes(b.id));
+    const underordnet = begreper.filter((x) => x.overordnet === b.id);
+    const lenke = (id) => `<button class="brikke" data-begrep="${esc(id)}">${esc(begrepById[id]?.anbefalt_term ?? id)}</button>`;
+    return `
+    <article class="kort" id="${esc(b.id)}">
+      <h3>${esc(b.anbefalt_term)}</h3>
+      <p>${esc(b.definisjon)}</p>
+      <div class="meta">Ansvarlig: ${esc(orgNavn(b.ansvarlig))}</div>
+      ${b.overordnet ? `<div class="etikett">Overordnet</div><div class="brikker">${lenke(b.overordnet)}</div>` : ""}
+      ${underordnet.length ? `<div class="etikett">Underordnet</div><div class="brikker">${underordnet.map((x) => lenke(x.id)).join("")}</div>` : ""}
+      ${b.se_ogsa?.length ? `<div class="etikett">Se også</div><div class="brikker">${b.se_ogsa.map(lenke).join("")}</div>` : ""}
+      ${brukesI.length ? `<div class="etikett">Brukes i</div><div class="brikker">${brukesI.map((d) =>
+        `<button class="brikke" data-datasett="${esc(d.id)}">${esc(d.tittel)}</button>`).join("")}</div>` : ""}
+    </article>`;
+  }).join("");
+}
+visBegreper();
+
+function begrepsgraf() {
+  const node = (id) => id.replace(/[^a-zA-Z0-9]/g, "_");
+  const linjer = ["flowchart BT"];
+  begreper.forEach((b) => linjer.push(`  ${node(b.id)}["${(b.anbefalt_term ?? b.id).replace(/"/g, "'")}"]`));
+  begreper.forEach((b) => {
+    if (b.overordnet) linjer.push(`  ${node(b.id)} --> ${node(b.overordnet)}`);
+    (b.se_ogsa ?? []).forEach((s) => linjer.push(`  ${node(b.id)} -.- ${node(s)}`));
+  });
+  return linjer.join("\n");
+}
+
+// Hopp mellom datasett og begreper
+function hopp(fane, id) {
+  visFane(fane);
+  const el = document.getElementById(id);
+  if (!el) return;
+  document.querySelectorAll(".kort.markert").forEach((k) => k.classList.remove("markert"));
+  el.classList.add("markert");
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-begrep]");
+  if (b) return hopp("begreper", b.dataset.begrep);
+  const d = e.target.closest("[data-datasett]");
+  if (d) {
+    ["#sok", "#filter-tema", "#filter-tilgang", "#filter-utgiver"].forEach((s) => ($(s).value = ""));
+    visDatasett();
+    hopp("datasett", d.dataset.datasett);
+  }
+});
+
+// Modell
+$("#klasser").innerHTML = modell.klasser.map((k) => `
+  <div class="panel" id="klasse-${esc(k.navn)}">
+    <div class="klasse-hode"><h2>${esc(k.navn)}</h2>${k.uri ? `<code>${esc(k.uri)}</code>` : ""}</div>
+    <p>${esc(k.beskrivelse)}</p>
+    <table>
+      <thead><tr><th>Felt</th><th>Type</th><th>Antall</th><th>Beskrivelse</th></tr></thead>
+      <tbody>${k.felter.map((f) => `
+        <tr>
+          <td><code>${esc(f.navn)}</code>${f.paakrevd ? ' <span class="krav" title="Påkrevd">*</span>' : ""}</td>
+          <td>${f.erKlasse ? `<a href="#klasse-${esc(f.type)}">${esc(f.type)}</a>` : f.erEnum
+            ? `<span title="${esc(enumVerdier[f.type].map((v) => v.navn).join(", "))}">${esc(f.type)}</span>` : esc(f.type)}</td>
+          <td>${f.flere ? "0..*" : f.paakrevd ? "1" : "0..1"}</td>
+          <td>${esc(f.beskrivelse)}</td>
+        </tr>`).join("")}
+      </tbody>
+    </table>
+  </div>`).join("") + `
+  <div class="panel">
+    <h2>Kodelister</h2>
+    <table>
+      <thead><tr><th>Enum</th><th>Tillatte verdier</th></tr></thead>
+      <tbody>${modell.enums.map((e) => `<tr><td><code>${esc(e.navn)}</code></td><td>${e.verdier.map((v) => `<code>${esc(v.navn)}</code>`).join(", ")}</td></tr>`).join("")}</tbody>
+    </table>
+  </div>`;
+</script>
+</body>
+</html>

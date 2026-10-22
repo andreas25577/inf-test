@@ -1,0 +1,134 @@
+# Eksempeldata som følger skjemaet i src/schema/katalog.yaml.
+# Organisasjonene og datasettene er oppdiktet.
+
+id: kat:kat-test
+tittel: Testkatalog
+beskrivelse: En liten katalog for å prøve ut LinkML.
+
+organisasjoner:
+  - id: kat:org-statistikk
+    navn: Eksempelstatistikk
+    organisasjonsnummer: "999000111"
+    nettside: https://example.org/statistikk
+  - id: kat:org-direktorat
+    navn: Eksempeldirektoratet
+    organisasjonsnummer: "999000222"
+    nettside: https://example.org/direktorat
+  - id: kat:org-kommune
+    navn: Eksempel kommune
+    organisasjonsnummer: "999000333"
+
+begreper:
+  - id: kat:begrep-person
+    anbefalt_term: person
+    definisjon: Et menneske som er registrert med en identitet.
+    ansvarlig: kat:org-direktorat
+  - id: kat:begrep-henvendelse
+    anbefalt_term: henvendelse
+    definisjon: En skriftlig eller muntlig kontakt med en offentlig virksomhet.
+    ansvarlig: kat:org-direktorat
+  - id: kat:begrep-soknad
+    anbefalt_term: søknad
+    definisjon: En formell henvendelse der noen ber om et vedtak.
+    ansvarlig: kat:org-direktorat
+    overordnet: kat:begrep-henvendelse
+  - id: kat:begrep-vedtak
+    anbefalt_term: vedtak
+    definisjon: En avgjørelse som er bestemmende for rettigheter eller plikter.
+    ansvarlig: kat:org-direktorat
+    se_ogsa: [kat:begrep-soknad]
+  - id: kat:begrep-klage
+    anbefalt_term: klage
+    definisjon: En henvendelse der noen ber om at et vedtak blir vurdert på nytt.
+    ansvarlig: kat:org-direktorat
+    overordnet: kat:begrep-henvendelse
+    se_ogsa: [kat:begrep-vedtak]
+  - id: kat:begrep-saksbehandlingstid
+    anbefalt_term: saksbehandlingstid
+    definisjon: Tiden fra en søknad er mottatt til vedtak er fattet.
+    ansvarlig: kat:org-direktorat
+    se_ogsa: [kat:begrep-soknad, kat:begrep-vedtak]
+  - id: kat:begrep-bosted
+    anbefalt_term: bosted
+    definisjon: Kommunen der en person er registrert som bosatt.
+    ansvarlig: kat:org-statistikk
+  - id: kat:begrep-innbygger
+    anbefalt_term: innbygger
+    definisjon: En person som har bosted i en kommune.
+    ansvarlig: kat:org-kommune
+    overordnet: kat:begrep-person
+    se_ogsa: [kat:begrep-bosted]
+
+datasett:
+  - id: kat:ds-soknader
+    tittel: Søknader per måned
+    beskrivelse: Antall mottatte søknader fordelt på måned og søknadstype.
+    utgiver: kat:org-direktorat
+    tema: [offentlig_sektor, justis]
+    tilgangsniva: offentlig
+    oppdateringsfrekvens: maanedlig
+    nokkelord: [søknader, statistikk, saksbehandling]
+    begreper_brukt: [kat:begrep-soknad, kat:begrep-person]
+    sist_endret: "2026-10-01"
+    distribusjoner:
+      - tittel: Månedstall som CSV
+        format: CSV
+        tilgangsurl: https://example.org/direktorat/soknader.csv
+      - tittel: Åpent API
+        format: API
+        tilgangsurl: https://example.org/direktorat/api/soknader
+
+  - id: kat:ds-saksbehandlingstid
+    tittel: Saksbehandlingstider
+    beskrivelse: Median og 80-persentil for saksbehandlingstid per sakstype.
+    utgiver: kat:org-direktorat
+    tema: [offentlig_sektor]
+    tilgangsniva: offentlig
+    oppdateringsfrekvens: ukentlig
+    nokkelord: [ventetid, saksbehandling]
+    begreper_brukt: [kat:begrep-saksbehandlingstid, kat:begrep-soknad, kat:begrep-vedtak]
+    sist_endret: "2026-10-20"
+    distribusjoner:
+      - tittel: JSON-fil
+        format: JSON
+        tilgangsurl: https://example.org/direktorat/behandlingstid.json
+
+  - id: kat:ds-vedtak
+    tittel: Vedtak og klager
+    beskrivelse: Vedtak fordelt på utfall, og andel som blir påklaget.
+    utgiver: kat:org-direktorat
+    tema: [justis]
+    tilgangsniva: begrenset
+    oppdateringsfrekvens: aarlig
+    nokkelord: [vedtak, klage]
+    begreper_brukt: [kat:begrep-vedtak, kat:begrep-klage]
+    sist_endret: "2026-03-15"
+
+  - id: kat:ds-befolkning
+    tittel: Befolkning per kommune
+    beskrivelse: Antall innbyggere per kommune, fordelt på alder og kjønn.
+    utgiver: kat:org-statistikk
+    tema: [befolkning_og_samfunn]
+    tilgangsniva: offentlig
+    oppdateringsfrekvens: aarlig
+    nokkelord: [befolkning, kommune, demografi]
+    begreper_brukt: [kat:begrep-innbygger, kat:begrep-bosted]
+    sist_endret: "2026-02-28"
+    distribusjoner:
+      - tittel: CSV
+        format: CSV
+        tilgangsurl: https://example.org/statistikk/befolkning.csv
+      - tittel: XML
+        format: XML
+        tilgangsurl: https://example.org/statistikk/befolkning.xml
+
+  - id: kat:ds-innbyggerregister
+    tittel: Lokalt innbyggerregister
+    beskrivelse: Internt register over innbyggere som bruker kommunale tjenester.
+    utgiver: kat:org-kommune
+    tema: [befolkning_og_samfunn, offentlig_sektor]
+    tilgangsniva: ikke_offentlig
+    oppdateringsfrekvens: daglig
+    nokkelord: [innbyggere, tjenester]
+    begreper_brukt: [kat:begrep-innbygger, kat:begrep-person, kat:begrep-bosted]
+    sist_endret: "2026-10-22"

@@ -1,0 +1,218 @@
+id: https://example.org/linkml-katalog
+name: katalog
+title: Datakatalog (testmodell)
+description: >-
+  En liten testmodell for en datakatalog i data.norge-stil. Den beskriver
+  datasett, distribusjoner, begreper og organisasjonene som eier dem.
+  Modellen er løst inspirert av DCAT-AP-NO og SKOS-AP-NO, men forenklet.
+license: MIT
+version: 0.1.0
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  katalog: https://example.org/linkml-katalog/
+  kat: https://example.org/linkml-katalog/data/
+  dcat: http://www.w3.org/ns/dcat#
+  dct: http://purl.org/dc/terms/
+  skos: http://www.w3.org/2004/02/skos/core#
+  foaf: http://xmlns.com/foaf/0.1/
+  schema: http://schema.org/
+
+default_prefix: katalog
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  Katalog:
+    description: Rotobjektet. Samler alt innhold i katalogen.
+    tree_root: true
+    class_uri: dcat:Catalog
+    slots:
+      - id
+      - tittel
+      - beskrivelse
+      - organisasjoner
+      - datasett
+      - begreper
+
+  Organisasjon:
+    description: En virksomhet som eier eller forvalter datasett og begreper.
+    class_uri: foaf:Organization
+    slots:
+      - id
+      - navn
+      - organisasjonsnummer
+      - nettside
+
+  Datasett:
+    description: En samling data som en organisasjon tilgjengeliggjør.
+    class_uri: dcat:Dataset
+    slots:
+      - id
+      - tittel
+      - beskrivelse
+      - utgiver
+      - tema
+      - tilgangsniva
+      - oppdateringsfrekvens
+      - nokkelord
+      - begreper_brukt
+      - distribusjoner
+      - sist_endret
+    slot_usage:
+      tittel:
+        required: true
+      utgiver:
+        required: true
+
+  Distribusjon:
+    description: En konkret måte å få tak i et datasett på, f.eks. en fil eller et API.
+    class_uri: dcat:Distribution
+    slots:
+      - tittel
+      - format
+      - tilgangsurl
+
+  Begrep:
+    description: En definert term som brukes i datasettene.
+    class_uri: skos:Concept
+    slots:
+      - id
+      - anbefalt_term
+      - definisjon
+      - ansvarlig
+      - overordnet
+      - se_ogsa
+    slot_usage:
+      anbefalt_term:
+        required: true
+      definisjon:
+        required: true
+
+slots:
+
+  id:
+    identifier: true
+    description: Unik identifikator som CURIE, f.eks. "kat:ds-soknader".
+    range: uriorcurie
+    pattern: "^kat:[a-z]+-[a-z0-9-]+$"
+  tittel:
+    slot_uri: dct:title
+  navn:
+    slot_uri: foaf:name
+    required: true
+  beskrivelse:
+    slot_uri: dct:description
+  organisasjonsnummer:
+    description: Norsk organisasjonsnummer, 9 siffer.
+    pattern: "^[0-9]{9}$"
+  nettside:
+    range: uri
+    slot_uri: foaf:homepage
+  sist_endret:
+    range: date
+    slot_uri: dct:modified
+  nokkelord:
+    multivalued: true
+    slot_uri: dcat:keyword
+  format:
+    range: Filformat
+    slot_uri: dct:format
+  tilgangsurl:
+    range: uri
+    slot_uri: dcat:accessURL
+
+  utgiver:
+    description: Organisasjonen som utgir datasettet.
+    range: Organisasjon
+    slot_uri: dct:publisher
+  ansvarlig:
+    description: Organisasjonen som forvalter begrepet.
+    range: Organisasjon
+    slot_uri: dct:publisher
+  tema:
+    range: Tema
+    multivalued: true
+    slot_uri: dcat:theme
+  tilgangsniva:
+    range: Tilgangsniva
+    slot_uri: dct:accessRights
+  oppdateringsfrekvens:
+    range: Frekvens
+    slot_uri: dct:accrualPeriodicity
+
+  organisasjoner:
+    range: Organisasjon
+    multivalued: true
+    inlined_as_list: true
+  datasett:
+    range: Datasett
+    multivalued: true
+    inlined_as_list: true
+  begreper:
+    range: Begrep
+    multivalued: true
+    inlined_as_list: true
+  distribusjoner:
+    range: Distribusjon
+    multivalued: true
+    inlined_as_list: true
+
+  begreper_brukt:
+    description: Begreper som datasettet bruker.
+    range: Begrep
+    multivalued: true
+    inlined: false
+  anbefalt_term:
+    slot_uri: skos:prefLabel
+  definisjon:
+    slot_uri: skos:definition
+  overordnet:
+    description: Et bredere begrep.
+    range: Begrep
+    slot_uri: skos:broader
+  se_ogsa:
+    range: Begrep
+    multivalued: true
+    inlined: false
+    slot_uri: skos:related
+
+enums:
+
+  Tilgangsniva:
+    permissible_values:
+      offentlig:
+        description: Fritt tilgjengelig for alle.
+      begrenset:
+        description: Tilgjengelig for utvalgte brukere etter avtale.
+      ikke_offentlig:
+        description: Ikke tilgjengelig utenfor virksomheten.
+
+  Frekvens:
+    permissible_values:
+      daglig:
+      ukentlig:
+      maanedlig:
+      aarlig:
+      uregelmessig:
+
+  Filformat:
+    permissible_values:
+      CSV:
+      JSON:
+      XML:
+      PDF:
+      API:
+
+  Tema:
+    description: Forenklet utvalg av EUs datatemaer.
+    permissible_values:
+      befolkning_og_samfunn:
+      offentlig_sektor:
+      okonomi_og_finans:
+      justis:
+      utdanning_kultur_sport:
+      miljo:
